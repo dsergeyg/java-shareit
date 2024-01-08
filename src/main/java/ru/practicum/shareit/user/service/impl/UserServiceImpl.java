@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
     private boolean checkUserEmail(UserDto userDto, long userId) {
         for (User user : userStorage.getUsers()) {
-            if (user.getEmail().equals(userDto.getEmail()) & user.getId() != userId)
+            if (user.getId() != userId && user.getEmail().equals(userDto.getEmail()))
                 return true;
         }
         return false;
