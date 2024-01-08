@@ -5,7 +5,6 @@ import lombok.Data;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
@@ -13,9 +12,8 @@ import java.time.LocalDateTime;
  */
 @Data
 @AllArgsConstructor
-public class Booking implements Update {
+public class Booking {
 
-    @NotNull(groups = Update.class)
     Long id;
     User booker;
     Item item;
