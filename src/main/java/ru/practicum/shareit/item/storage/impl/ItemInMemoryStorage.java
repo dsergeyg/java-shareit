@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.storage.impl;
 
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 @Component("itemInMemoryStorage")
 public class ItemInMemoryStorage implements ItemStorage {
 
-    Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>();
     private long idSequence;
 
     @Override
@@ -26,14 +27,15 @@ public class ItemInMemoryStorage implements ItemStorage {
     }
 
     @Override
-    public Item updateItem(Item item) {
-        if (item.getName() != null)
-            items.get(item.getId()).setName(item.getName());
-        if (item.getDescription() != null)
-            items.get(item.getId()).setDescription(item.getDescription());
-        if (item.getAvailable() != null)
-            items.get(item.getId()).setAvailable(item.getAvailable());
-        return items.get(item.getId());
+    public Item updateItem(long itemId, ItemDto itemDto) {
+        Item curItem = items.get(itemId);
+        if (itemDto.getName() != null)
+            curItem.setName(itemDto.getName());
+        if (itemDto.getDescription() != null)
+            curItem.setDescription(itemDto.getDescription());
+        if (itemDto.getAvailable() != null)
+            curItem.setAvailable(itemDto.getAvailable());
+        return items.get(itemId);
     }
 
     @Override

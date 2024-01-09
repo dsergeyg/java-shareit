@@ -42,11 +42,11 @@ public class UserServiceImpl implements UserService {
     public User updateUser(UserDto userDto, long userId) {
         if (getUserById(userId) == null)
             throw new NotFoundException("User not found");
-        if (userDto.getEmail() != null) {
+        if (userDto.getEmail() != null && !userDto.getEmail().equals(getUserById(userId).getEmail())) {
             if (checkUserEmail(userDto, userId))
                 throw new AlReadyExists("Email already exists");
         }
-        return userStorage.updateUserInStorage(UserMapper.toUser(userDto, userId));
+        return userStorage.updateUserInStorage(userDto, userId);
     }
 
     @Override
@@ -70,18 +70,13 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean checkUserEmail(UserDto userDto, long userId) {
-        for (User user : userStorage.getUsers()) {
-            if (user.getId() != userId && user.getEmail().equals(userDto.getEmail()))
-                return true;
-        }
-        return false;
+        String curEmail = getUserById(userId).getEmail();
+        if (curEmail.equals(userDto.getEmail()))
+            return false;
+        return checkUserEmail(userDto);
     }
 
     private boolean checkUserEmail(UserDto userDto) {
-        for (User user : userStorage.getUsers()) {
-            if (user.getEmail().equals(userDto.getEmail()))
-                return true;
-        }
-        return false;
+        return userStorage.getEmails().contains(userDto.getEmail());
     }
 }

@@ -41,7 +41,7 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Request header without  X-Sharer-User-Id or user not found by userId");
         if (itemStorage.getItemById(itemId).getOwner().getId() != userId)
             throw new NotEnoughPermissions("User " + userId + " is not owner item " + itemId);
-        return itemStorage.updateItem(ItemMapper.toItem(itemId, itemDto, userStorage.getUserById(userId), null));
+        return itemStorage.updateItem(itemId, itemDto);
     }
 
     @Override

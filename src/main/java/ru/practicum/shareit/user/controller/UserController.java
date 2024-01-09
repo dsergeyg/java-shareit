@@ -1,8 +1,7 @@
 package ru.practicum.shareit.user.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -10,19 +9,12 @@ import ru.practicum.shareit.user.service.UserService;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping(path = "/users")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @PostMapping
     public User postUser(@Valid @RequestBody UserDto userDto) {
@@ -31,7 +23,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public User putUser(@Valid @RequestBody UserDto userDto,
-                        @PathVariable long userId) throws NotFoundException {
+                        @PathVariable long userId) {
         return userService.updateUser(userDto, userId);
     }
 
