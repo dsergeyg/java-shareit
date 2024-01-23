@@ -8,6 +8,7 @@ import java.util.List;
 
 @Transactional(readOnly = true)
 public interface BookingService {
+
     @Transactional
     BookingDto addBooking(long userId, BookingDtoIn bookingDto);
 
