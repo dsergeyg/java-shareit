@@ -50,7 +50,6 @@ public class ItemServiceImpl implements ItemService {
         Item curItem = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
         Booking lastBooking = bookingRepository.findFirstByItemIdAndStartIsBeforeAndStatus(curItem.getId(), LocalDateTime.now(), BookingState.APPROVED, Sort.by("start").descending());
         Booking nextBooking = bookingRepository.findFirstByItemIdAndStartIsAfterAndStatus(curItem.getId(), LocalDateTime.now(), BookingState.APPROVED, Sort.by("start").ascending());
-        
         List<Comment> comments = getCommentsToItem(curItem.getId());
         ItemDtoBookingInfo lastItemBooking = null;
         if (lastBooking != null)
@@ -58,7 +57,6 @@ public class ItemServiceImpl implements ItemService {
         ItemDtoBookingInfo nextItemBooking = null;
         if (nextBooking != null)
             nextItemBooking = ItemDtoBookingInfo.builder().setId(nextBooking.getId()).setBookerId(nextBooking.getBooker().getId()).build();
-
         if (userRepository.findById(userId).isEmpty())
             throw new NotFoundException("Request header without X-Sharer-User-Id or user not found by userId");
         if (itemRepository.findById(itemId).isPresent() && itemRepository.findById(itemId).get().getOwner().getId() != userId)
