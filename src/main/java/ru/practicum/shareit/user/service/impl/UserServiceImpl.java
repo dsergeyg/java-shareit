@@ -59,12 +59,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void deleteUser(long userId) {
-        if (!checkUserHistory(userId))
             userRepository.deleteById(userId);
     }
-
-    private boolean checkUserHistory(long userId) {
-        return itemRepository.findByUserId(userId).size() > 0;
-    }
-
 }
