@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service.impl;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -29,12 +30,18 @@ import java.util.List;
 @Transactional(readOnly = true)
 @Service
 @Component("bookingServiceImpl")
-@RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final UserService userService;
     private final ItemService itemService;
+
+    @Autowired
+    public BookingServiceImpl(@Qualifier("bookingRepository") BookingRepository bookingRepository, UserService userService, ItemService itemService) {
+        this.bookingRepository = bookingRepository;
+        this.userService = userService;
+        this.itemService = itemService;
+    }
 
     @Transactional
     @Override
