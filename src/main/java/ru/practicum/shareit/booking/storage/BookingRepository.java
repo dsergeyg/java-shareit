@@ -10,7 +10,6 @@ import ru.practicum.shareit.booking.model.BookingState;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Qualifier(value = "bookingRepository")
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByItemIdAndStatus(long itemId, BookingState status);
