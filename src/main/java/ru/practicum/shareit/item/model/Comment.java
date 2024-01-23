@@ -17,7 +17,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(name = "text")
+    @Column(name = "description")
     String text;
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude

@@ -36,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     @Override
     public ItemDto addItem(ItemDto itemDto, long userId) {
         if (userRepository.findById(userId).isEmpty())
@@ -43,13 +44,14 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(itemDto, userRepository.findById(userId).get(), null)));
     }
 
+    @Transactional
     @Override
     public ItemDto updateItem(ItemDto itemDto, long itemId, long userId) {
         Item curItem = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
         Booking lastBooking = bookingRepository.findFirstByItemIdAndStartIsBeforeAndStatus(curItem.getId(), LocalDateTime.now(), BookingState.APPROVED, Sort.by("start").descending());
         Booking nextBooking = bookingRepository.findFirstByItemIdAndStartIsAfterAndStatus(curItem.getId(), LocalDateTime.now(), BookingState.APPROVED, Sort.by("start").ascending());
+        
         List<Comment> comments = getCommentsToItem(curItem.getId());
-
         ItemDtoBookingInfo lastItemBooking = null;
         if (lastBooking != null)
             lastItemBooking = ItemDtoBookingInfo.builder().setId(lastBooking.getId()).setBookerId(lastBooking.getBooker().getId()).build();
@@ -74,6 +76,7 @@ public class ItemServiceImpl implements ItemService {
                 commentDtoList(comments));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ItemDto getItemById(long itemId, long userId) {
         Item curItem = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
@@ -95,6 +98,7 @@ public class ItemServiceImpl implements ItemService {
             return ItemMapper.toItemDto(curItem, commentDtoList(comments));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Comment> getCommentsToItem(long itemId) {
         List<Comment> comments = commentRepository.findByItemId(itemId, Sort.by("created"));
@@ -104,6 +108,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
     }
 
+    @Transactional
     @Override
     public CommentDto addCommentToItem(CommentDto commentDto, long itemId, long userId) {
         Item curItem = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
@@ -114,15 +119,18 @@ public class ItemServiceImpl implements ItemService {
             throw new NotEnoughData("Ended booking for item not found");
     }
 
+    @Transactional(readOnly = true)
     public Item getFullItemById(long itemId) {
         return itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getItems(long userId) {
         return listToItemDto(itemRepository.findByUserId(userId));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getItems(String searchText) {
         if (searchText.isEmpty())
@@ -130,6 +138,7 @@ public class ItemServiceImpl implements ItemService {
         return listToItemDto(itemRepository.findByNameOrDescriptionContaining(searchText, true));
     }
 
+    @Transactional(readOnly = true)
     public List<ItemDto> listToItemDto(List<Item> items) {
         List<ItemDto> curItemDtoList = new ArrayList<>();
         for (Item curItem : items) {

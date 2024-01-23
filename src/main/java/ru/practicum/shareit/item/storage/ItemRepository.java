@@ -10,10 +10,9 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    @Query("SELECT i " +
-            "FROM Item i " +
-            "JOIN i.owner AS u " +
-            "WHERE u.id = ?1")
+    @Query(value = "SELECT i.* " +
+            "FROM items AS i " +
+            "WHERE i.owner_id = ?1", nativeQuery = true)
     List<Item> findByUserId(long userId);
 
     @Query("SELECT i FROM Item i WHERE (LOWER(i.name) like '%'||LOWER(?1)||'%' OR LOWER(i.description) like '%'||LOWER(?1)||'%') AND i.available = ?2")
