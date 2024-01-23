@@ -1,5 +1,6 @@
 package ru.practicum.shareit.exception;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +12,7 @@ import javax.validation.ValidationException;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler({BindException.class, ValidationException.class, NotEnoughData.class})
+    @ExceptionHandler({BindException.class, ValidationException.class, NotEnoughData.class, ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidate(final Exception e) {
         return new ErrorResponse("Ошибка в запросе.", e.getMessage());
@@ -33,5 +34,11 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(final RuntimeException e) {
         return new ErrorResponse("Ошибка сервера.", e.getMessage());
+    }
+
+    @ExceptionHandler({UnsupportedStatus.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleUnsupportedStatus(final RuntimeException e) {
+        return new ErrorResponse("Unknown state: " +  e.getMessage());
     }
 }

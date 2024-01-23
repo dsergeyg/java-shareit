@@ -1,82 +1,73 @@
 package ru.practicum.shareit.user.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.AlReadyExists;
-import ru.practicum.shareit.exception.NotEnoughData;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.storage.ItemStorage;
+import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.user.storage.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
+
+@Transactional(readOnly = true)
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserStorage userStorage;
-    private final ItemStorage itemStorage;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
-    @Autowired
-    public UserServiceImpl(@Qualifier("userInMemoryStorage") UserStorage userStorage,
-                           @Qualifier("itemInMemoryStorage") ItemStorage itemStorage) {
-        this.userStorage = userStorage;
-        this.itemStorage = itemStorage;
+    @Transactional
+    @Override
+    public UserDto addUser(UserDto userDto) {
+        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
     }
 
+    @Transactional
     @Override
-    public User addUser(UserDto userDto) {
-        if (userDto.getEmail() == null) {
-            throw new NotEnoughData("Not enough data \"email\"");
+    public UserDto updateUser(UserDto userDto, long userId) {
+        User curUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        if (userDto.getEmail() != null)
+            curUser.setEmail(userDto.getEmail());
+        if (userDto.getName() != null)
+            curUser.setName(userDto.getName());
+        return UserMapper.toUserDto(userRepository.save(curUser));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<UserDto> getUsers() {
+        List<UserDto> curUserDtoList = new ArrayList<>();
+        for (User curUser : userRepository.findAll()) {
+            curUserDtoList.add(UserMapper.toUserDto(curUser));
         }
-        if (checkUserEmail(userDto))
-            throw new AlReadyExists("Email already exists");
-        return userStorage.addUserToStorage(UserMapper.toUser(userDto));
+        return curUserDtoList;
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public User updateUser(UserDto userDto, long userId) {
-        if (getUserById(userId) == null)
-            throw new NotFoundException("User not found");
-        if (userDto.getEmail() != null && !userDto.getEmail().equals(getUserById(userId).getEmail())) {
-            if (checkUserEmail(userDto, userId))
-                throw new AlReadyExists("Email already exists");
-        }
-        return userStorage.updateUserInStorage(userDto, userId);
+    public UserDto getUserById(long id) {
+        return UserMapper.toUserDto(userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found")));
     }
 
-    @Override
-    public List<User> getUsers() {
-        return userStorage.getUsers();
-    }
-
-    @Override
-    public User getUserById(long id) {
-        return userStorage.getUserById(id);
-    }
-
+    @Transactional
     @Override
     public void deleteUser(long userId) {
         if (!checkUserHistory(userId))
-            userStorage.deleteUser(userId);
+            userRepository.deleteById(userId);
     }
 
     private boolean checkUserHistory(long userId) {
-        return itemStorage.getItemByUser(userId).size() > 0;
-    }
-
-    private boolean checkUserEmail(UserDto userDto, long userId) {
-        String curEmail = getUserById(userId).getEmail();
-        if (curEmail.equals(userDto.getEmail()))
-            return false;
-        return checkUserEmail(userDto);
+        return itemRepository.findByUserId(userId).size() > 0;
     }
 
     private boolean checkUserEmail(UserDto userDto) {
-        return userStorage.getEmails().contains(userDto.getEmail());
+        return userRepository.findAllEmails().contains(userDto.getEmail());
     }
 }

@@ -8,6 +8,7 @@ import javax.validation.constraints.Email;
 @Data
 @Builder(setterPrefix = "set")
 public class UserDto {
+    private Long id;
     @Email(message = "Email doesn't match email pattern, example \"my@yandex.ru\"")
     private String email;
     private String name;
