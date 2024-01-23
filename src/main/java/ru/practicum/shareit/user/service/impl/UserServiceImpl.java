@@ -67,7 +67,4 @@ public class UserServiceImpl implements UserService {
         return itemRepository.findByUserId(userId).size() > 0;
     }
 
-    private boolean checkUserEmail(UserDto userDto) {
-        return userRepository.findAllEmails().contains(userDto.getEmail());
-    }
 }
