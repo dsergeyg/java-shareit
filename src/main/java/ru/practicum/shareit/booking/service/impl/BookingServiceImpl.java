@@ -139,7 +139,7 @@ public class BookingServiceImpl implements BookingService {
 
     private boolean checkBooking(LocalDateTime start, long itemId) {
         for (Booking booking : bookingRepository.findByItemIdAndStatus(itemId, BookingState.APPROVED)) {
-            if (start.isAfter(booking.getStart()) & start.isBefore(booking.getEnd()) & booking.getStatus().equals(BookingState.APPROVED))
+            if (start.isAfter(booking.getStart()) && start.isBefore(booking.getEnd()) && booking.getStatus().equals(BookingState.APPROVED))
                 return true;
         }
         return false;
