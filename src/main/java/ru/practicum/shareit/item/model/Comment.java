@@ -17,7 +17,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     String text;
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
@@ -25,6 +25,6 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     User author;
-    @Column(name = "created")
+    @Column(name = "created", nullable = false)
     LocalDateTime created = LocalDateTime.now();
 }

@@ -24,11 +24,11 @@ public class Booking {
     @ManyToOne
     @ToString.Exclude
     Item item;
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     LocalDateTime start;
-    @Column(name = "end_date")
+    @Column(name = "end_date", nullable = false)
     LocalDateTime end;
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     BookingState status;
 

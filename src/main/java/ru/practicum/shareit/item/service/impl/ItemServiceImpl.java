@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
@@ -112,7 +111,7 @@ public class ItemServiceImpl implements ItemService {
         Item curItem = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
         User curUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Item not found"));
         if (!bookingRepository.findByBookerIdAndEndIsBeforeAndStatus(userId, LocalDateTime.now(), BookingState.APPROVED, Sort.by("start").descending()).isEmpty()) {
-            return CommentMapper.toCommentDto(commentRepository.save(new Comment(null, commentDto.getText(), curItem, curUser, LocalDateTime.now())));
+            return CommentMapper.toCommentDto(commentRepository.save(CommentMapper.toComment(commentDto, curUser, curItem)));
         } else
             throw new NotEnoughData("Ended booking for item not found");
     }
@@ -125,7 +124,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getItems(long userId) {
-        return listToItemDto(itemRepository.findByUserId(userId));
+        return listToItemDto(itemRepository.findByOwner_IdEquals(userId));
     }
 
     @Transactional(readOnly = true)

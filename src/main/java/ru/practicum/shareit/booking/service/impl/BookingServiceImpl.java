@@ -25,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
@@ -99,16 +98,17 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getBookingItemByState(long userId, String state) {
         userService.getUserById(userId);
+        Sort newestFirst = Sort.by(Sort.Direction.DESC, "start");
         if (state.equals(BookingState.ALL.getCode()))
-            return listToBookingDto(bookingRepository.findByBookerId(userId, Sort.by("start").descending()), userId);
+            return listToBookingDto(bookingRepository.findByBookerId(userId, newestFirst), userId);
         if (state.equals(BookingState.CURRENT.getCode()))
-            return listToBookingDto(bookingRepository.findByBookerIdAndEndAfterAndStartBefore(userId, LocalDateTime.now(), LocalDateTime.now(), Sort.by("start").descending()), userId);
+            return listToBookingDto(bookingRepository.findByBookerIdAndEndAfterAndStartBefore(userId, LocalDateTime.now(), LocalDateTime.now(), newestFirst), userId);
         if (state.equals(BookingState.PAST.getCode()))
-            return listToBookingDto(bookingRepository.findByBookerIdAndEndIsBeforeAndStatus(userId, LocalDateTime.now(), BookingState.APPROVED, Sort.by("start").descending()), userId);
+            return listToBookingDto(bookingRepository.findByBookerIdAndEndIsBeforeAndStatus(userId, LocalDateTime.now(), BookingState.APPROVED, newestFirst), userId);
         if (state.equals(BookingState.FUTURE.getCode()))
             return listToBookingDto(bookingRepository.findFutureBookingItemByCurUser(userId), userId);
         if (state.equals(BookingState.WAITING.getCode()) || state.equals(BookingState.REJECTED.getCode()))
-            return listToBookingDto(bookingRepository.findByBookerIdAndStatus(userId, BookingState.valueOf(state), Sort.by("start").descending()), userId);
+            return listToBookingDto(bookingRepository.findByBookerIdAndStatus(userId, BookingState.valueOf(state), newestFirst), userId);
         throw new UnsupportedStatus(state);
     }
 

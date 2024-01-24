@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -14,14 +13,11 @@ import ru.practicum.shareit.user.storage.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-
-@Transactional(readOnly = true)
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ItemRepository itemRepository;
 
     @Transactional
     @Override
@@ -59,6 +55,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void deleteUser(long userId) {
-            userRepository.deleteById(userId);
+        userRepository.deleteById(userId);
     }
 }
