@@ -1,19 +1,30 @@
 package ru.practicum.shareit.booking.model;
 
 public enum BookingState {
-    WAITING("Новое бронирование, ожидает одобрения"),
-    APPROVED("Бронирование подтверждено владельцем"),
-    REJECTED("Бронирование отклонено владельцем"),
-    CANCELED("Бронирование отменено создателем");
 
-    private final String state;
+    ALL("Все", "ALL"),
+    PAST("Завершённые", "PAST"),
+    FUTURE("Будущие", "FUTURE"),
+    CURRENT("Текущие", "CURRENT"),
+    WAITING("Новое бронирование, ожидает одобрения", "WAITING"),
+    APPROVED("Бронирование подтверждено владельцем", "APPROVED"),
+    REJECTED("Бронирование отклонено владельцем", "REJECTED"),
+    CANCELED("Бронирование отменено создателем", "CANCELED");
+
+    private final String description;
+    private final String code;
 
 
-    BookingState(String state) {
-        this.state = state;
+    BookingState(String description, String code) {
+        this.description = description;
+        this.code = code;
     }
 
-    public String getState() {
-        return state;
+    public String getDescription() {
+        return description;
+    }
+
+    public String getCode() {
+        return code;
     }
 }
